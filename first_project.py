@@ -1,15 +1,24 @@
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
-import pandas as pd
-import mglearn
+from sklearn.neighbors import KNeighborsClassifier
+import numpy as np
+
 
 iris_dataset = load_iris()
 X_train, X_test, y_train, y_test = train_test_split(iris_dataset['data'],iris_dataset['target'], random_state=0)
-print('X_train shape: ', X_train.shape)
-print('X_test shape: ', X_test.shape)
-print('y_train shape: ', y_train.shape)
-print('y_test shape: ', y_test.shape)
 
-iris_dataframe = pd.DataFrame(X_train, columns = iris_dataset.feature_names)
+knn = KNeighborsClassifier(n_neighbors=1)
+knn.fit(X_train, y_train)
 
-pd.plotting.scatter_matrix(iris_dataframe, c=y_train, figsize=(15,15), marker='o', hist_kwds={'bins':20},s=60,alpha=.8,cmap=mglearn.cm3)
+# New iris
+X_new = np.array([[5,2.9,1,0.2]])
+prediction = knn.predict(X_new)
+print("Prediction: ", prediction)
+print("Predicted target name: ", iris_dataset['target_names'][prediction])
+
+# Evaluation based on test set
+y_pred = knn.predict(X_test)
+print('Test set predictions:\n ',y_pred)
+print('Test set score: {:.2f}'.format(np.mean(y_pred==y_test)))
+# or with score of knn object
+print('Test set score: {:.2f}'.format(knn.score(X_test, y_test)))
